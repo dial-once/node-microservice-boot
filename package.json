@@ -1,0 +1,27 @@
+{
+  "name": "@dialonce/boot",
+  "version": "0.0.0",
+  "description": "Dial Once's node microservice boot script",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dial-once/node-microservice-boot.git"
+  },
+  "author": "Dial Once",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dial-once/node-microservice-boot/issues"
+  },
+  "homepage": "https://github.com/dial-once/node-microservice-boot#readme",
+  "dependencies": {
+    "bugsnag": "^1.7.0",
+    "le_node": "^1.3.2",
+    "winston": "^2.2.0"
+  }
+}

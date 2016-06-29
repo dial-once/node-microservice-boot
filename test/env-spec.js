@@ -1,0 +1,62 @@
+var assert = require('assert'),
+  modulePath = '../src/env';
+
+describe('env checks', function() {
+
+  var prevHostname = process.env.HOSTNAME,
+    prevUser = process.env.USER;
+
+  afterEach(function() {
+    delete require.cache[require.resolve(modulePath)];
+    process.env.HOSTNAME = prevHostname;
+    process.env.USER = prevUser;
+    process.env.CONSOLE_LOGGING = '';
+  });
+
+  beforeEach(function() {
+    delete require.cache[require.resolve(modulePath)];
+  });
+
+  it('should take USER env var if HOSTNAME is undefined', function() {
+    process.env.HOSTNAME = '';
+    process.env.USER = 'user';
+
+    require(modulePath);
+
+    assert.equal(process.env.HOSTNAME, 'user');
+  });
+
+  it('should NOT take USER env var if HOSTNAME is defined', function() {
+    process.env.HOSTNAME = 'test';
+    process.env.USER = 'user';
+
+    require(modulePath);
+
+    assert.equal(process.env.HOSTNAME, 'test');
+  });
+
+  it('should take instance ID if HOSTNAME is defined with docker cloud format', function() {
+    process.env.HOSTNAME = 'instance-3';
+
+    require(modulePath);
+
+    assert.equal(process.env.INSTANCE_NUMBER, '3');
+  });
+
+  it('should set CONSOLE_LOGGING to false if NODE_ENV is production', function() {
+    process.env.NODE_ENV = 'production';
+
+    require(modulePath);
+
+    assert.equal(process.env.CONSOLE_LOGGING, 'false');
+  });
+
+  it('should not set CONSOLE_LOGGING to false if NODE_ENV is not production', function() {
+    process.env.NODE_ENV = 'test';
+    process.env.CONSOLE_LOGGING = '';
+
+    require(modulePath);
+
+    assert.equal(process.env.CONSOLE_LOGGING, '');
+  });
+});
