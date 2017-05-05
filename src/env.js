@@ -1,8 +1,19 @@
 const DEFAULT_INSTANCE_ID = 1;
 
-if (process.env.NODE_ENV === 'production') {
-  process.env.CONSOLE_LOGGING = 'false';
+if (process.env.NODE_ENV !== 'production') {
+  process.env.CONSOLE_LOGGING = 'true';
 }
+
+/* Supported
+process.env.CONSOLE_LOGGING;
+process.env.BUGSNAG_LOGGING;
+process.env.LOGENTRIES_LOGGING;
+process.env.MIN_LOG_LEVEL
+process.env.MIN_LOG_LEVEL_CONSOLE
+process.env.MIN_LOG_LEVEL_LOGENTRIES
+process.env.MIN_LOG_LEVEL_BUGSNAG
+process.env.DEFAULT_LOG_LEVEL
+*/
 
 if (!process.env.HOSTNAME) {
   process.env.HOSTNAME = process.env.USER;

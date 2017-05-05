@@ -49,7 +49,6 @@ describe('winston transports', () => {
     const notifier = require('../src/bugsnag')();
 
     const logger = require(modulePath)(notifier, '00000000-0000-0000-0000-000000000000', false);
-    console.log(require(modulePath)(notifier, '00000000-0000-0000-0000-000000000000', false));
 
     const mock = this.sinon.mock(notifier);
     mock.expects('notify').twice().withExactArgs('should notify');

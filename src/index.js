@@ -1,9 +1,31 @@
 require('./env');
+const BugsnagChainLink = require('./chainLinks/bugsnag-link');
+const ConsoleChainLink = require('./chainLinks/console-link');
+const LogentriesChainLink = require('./chainLinks/logentries-link');
+const Bugsnag = require('./adapters/bugsnag');
+const Winston = require('./adapters/winston');
+
+let instance;
+
 /**
- * Starts with false, then is used to cache the internal providers
- * @type {Boolean|Object}
- */
-let initModule = false;
+ Chain of Responsibility pattern
+ @see http://www.dofactory.com/javascript/chain-of-responsibility-design-pattern
+**/
+
+class LoggerChain {
+  constructor(settings) {
+    this.settings = settings;
+    this.bugsnagChain = new BugsnagChainLink(settings, null);
+    this.logentriesChain = new LogentriesChainLink(settings, this.bugsnagChain);
+    this.consoleChain = new ConsoleChainLink(settings, this.logentriesChain);
+    this.chainStart = this.consoleChain;
+    this.chainEnd = this.bugsnagChain;
+  }
+
+  log(message) {
+    this.chainStart.handle(message);
+  }
+}
 
 /**
  * Configure and return providers for our microservices. It should be required on module launch.
@@ -12,34 +34,27 @@ let initModule = false;
  * @param  {Object} [config] Configuration object required by the internal providers
  * @param  {string} [config.BUGS_TOKEN] Token used by internal notifier to send bug reports to
  * @param  {string} [config.LOGS_TOKEN] Token used by internal logger to send logs to
+ * @param  {boolean} [config.CONSOLE_LOGGING] Switches on/off the Console logging chain (less prior over env var)
+ * @param  {boolean} [config.LOGENTRIES_LOGGING] Switches on/off the Logentries logging chain (less prior over env var)
+ * @param  {boolean} [config.BUGSNAG_LOGGING] Switches on/off the BUGSNAG logging chain (less prior over env var)
  * @return {Object}        The configured providers
  */
 module.exports = (config) => {
-  // if no param is provided, we want to return the cached modules
   if (!config) {
-    // this should always be true when user require the module and have it initialised, else we print an error
-    if (initModule) return initModule;
-
-    /* eslint-disable no-console, no-param-reassign */
+    if (instance) return instance;
     console.error('Dial Once boot module should be initilised before used without config.');
   }
 
-  /**
-   * Stores configuration with a fallback on old, deprecated env vars (BUGSNAG, LOGENTRIES)
-   * @type {Object}
-   */
-  config = Object.assign({
-    BUGS_TOKEN: process.env.BUGSNAG_TOKEN,
-    LOGS_TOKEN: process.env.LOGENTRIES_TOKEN
+  const settings = Object.assign({
+    BUGS_TOKEN: process.env.BUGS_TOKEN || process.env.BUGSNAG_TOKEN,
+    LOGS_TOKEN: process.env.LOGS_TOKEN || process.env.LOGENTRIES_TOKEN
   }, config);
 
-  // stores the cached required modules for the next requires on @dialonce/boot
-  /* eslint-disable global-require */
-  initModule = {
-    notifier: require('./bugsnag')(config.BUGS_TOKEN)
+  const chain = new LoggerChain(settings);
+  instance = {
+    chain,
+    logger: new Winston(chain),
+    notifier: new Bugsnag(chain)
   };
-
-  initModule.logger = require('./winston')(initModule.notifier, config.LOGS_TOKEN, config.NOTIFY);
-
-  return initModule;
+  return instance;
 };
