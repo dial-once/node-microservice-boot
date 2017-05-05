@@ -13,6 +13,10 @@ process.env.MIN_LOG_LEVEL_CONSOLE
 process.env.MIN_LOG_LEVEL_LOGENTRIES
 process.env.MIN_LOG_LEVEL_BUGSNAG
 process.env.DEFAULT_LOG_LEVEL
+process.env.LOG_TIMESTAMP
+process.env.LOG_ENVIRONMENT
+process.env.LOG_LEVEL
+process.env.LOG_REQID
 */
 
 if (!process.env.HOSTNAME) {

@@ -1,5 +1,5 @@
 const assert = require('assert');
-const packMessage = require('../utils/message-formatter');
+const { packMessage } = require('../utils/message-formatter');
 
 class Winston {
   constructor(loggerChain) {

@@ -30,7 +30,7 @@ class BugsnagLink extends ChainLink {
       const notify = (typeof message.meta.notify === 'boolean') ? message.meta.notify : shouldBeUsed;
       const messageLevel = this.levels.has(message.level) ? message.level : this.levels.get('default');
       const minLogLevel = this.getMinLogLevel(this.chain);
-      if (this.levels[messageLevel] >= this.levels[minLogLevel] && notify) {
+      if (this.levels.get(messageLevel) >= this.levels.get(minLogLevel) && notify) {
         this.notifier.notify(message);
       }
     }

@@ -1,5 +1,6 @@
 require('le_node');
 const ChainLink = require('./chain-link');
+const { getPrefix } = require('./../utils/message-formatter');
 const winston = require('winston');
 
 class LogentriesLink extends ChainLink {
@@ -36,8 +37,9 @@ class LogentriesLink extends ChainLink {
     if (this.isReady() && this.willBeUsed()) {
       const messageLevel = this.levels.has(message.level) ? message.level : this.levels.get('default');
       const minLogLevel = this.getMinLogLevel(this.chain);
-      if (this.levels[message.level] >= this.levels[minLogLevel]) {
-        this.winston.log(messageLevel, `${message.meta.scope || ''}${message.text}`, message.meta);
+      if (this.levels.get(messageLevel) >= this.levels.get(minLogLevel)) {
+        const prefix = getPrefix(message, this.settings);
+        this.winston.log(messageLevel, `${prefix}${message.text}`, message.meta);
       }
     }
     this.next(message);
