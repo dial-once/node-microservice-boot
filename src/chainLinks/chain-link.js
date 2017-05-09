@@ -1,5 +1,8 @@
+const assert = require('assert');
+
 class ChainLink {
   constructor(settings, nextChainLink) {
+    assert(settings);
     this.nextLink = nextChainLink;
     this.settings = settings;
     const levels = [
@@ -10,14 +13,14 @@ class ChainLink {
       ['error', 4],
       ['default', process.env.DEFAULT_LOG_LEVEL || 'info']
     ];
-    this.levels = new Map(levels);
+    this.logLevels = new Map(levels);
   }
 
   getMinLogLevel(chain) {
     const minLogLevel = process.env[`MIN_LOG_LEVEL_${chain}`] || this.settings[`MIN_LOG_LEVEL_${chain}`] ||
         process.env.MIN_LOG_LEVEL || this.settings.MIN_LOG_LEVEL;
-    if (!this.levels.has(minLogLevel)) {
-      return this.levels.get('default');
+    if (!this.logLevels.has(minLogLevel)) {
+      return this.logLevels.get('default');
     }
     return minLogLevel;
   }

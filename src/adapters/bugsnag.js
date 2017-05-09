@@ -11,8 +11,8 @@ class Bugsnag {
     this.bugsnag = new BugsnagChainLink(this.loggerChain.settings, null);
   }
 
-  notify(...args) {
-    this.bugsnag.log(packMessage(null, args));
+  notify(message, ...args) {
+    this.bugsnag.handle(packMessage('error', message, args));
   }
 }
 

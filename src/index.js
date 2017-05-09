@@ -1,4 +1,5 @@
 require('./env');
+const { packMessage } = require('./utils/message-formatter');
 const BugsnagChainLink = require('./chainLinks/bugsnag-link');
 const ConsoleChainLink = require('./chainLinks/console-link');
 const LogentriesChainLink = require('./chainLinks/logentries-link');
@@ -22,8 +23,8 @@ class LoggerChain {
     this.chainEnd = this.bugsnagChain;
   }
 
-  log(message) {
-    this.chainStart.handle(message);
+  log(logLevel, message, ...args) {
+    this.chainStart.handle(packMessage(logLevel, message, args));
   }
 }
 
@@ -49,7 +50,6 @@ module.exports = (config) => {
     BUGS_TOKEN: process.env.BUGS_TOKEN || process.env.BUGSNAG_TOKEN,
     LOGS_TOKEN: process.env.LOGS_TOKEN || process.env.LOGENTRIES_TOKEN
   }, config);
-
   const chain = new LoggerChain(settings);
   instance = {
     chain,

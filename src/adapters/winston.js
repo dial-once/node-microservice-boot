@@ -1,5 +1,4 @@
 const assert = require('assert');
-const { packMessage } = require('../utils/message-formatter');
 
 class Winston {
   constructor(loggerChain) {
@@ -7,16 +6,14 @@ class Winston {
     this.loggerChain = loggerChain;
     const loggingLevels = ['error', 'warn', 'info', 'debug', 'silly', 'verbose'];
     for (const loggingLevel of loggingLevels) {
-      this[loggingLevel] = (...args) => {
-        loggerChain.log(packMessage(loggingLevel, args));
+      this[loggingLevel] = (message, ...args) => {
+        this.loggerChain.log(loggingLevel, message, args);
       };
     }
   }
 
-  log(...args) {
-    if (!args[0]) return;
-    const params = args[0];
-    this.loggerChain.log(params[0], [params.slice(1)]);
+  log(logLevel, message, ...args) {
+    this.loggerChain.log(logLevel, message, args);
   }
 
   profile(time) {
