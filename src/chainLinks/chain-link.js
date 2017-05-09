@@ -1,8 +1,5 @@
-const assert = require('assert');
-
 class ChainLink {
-  constructor(settings, nextChainLink) {
-    assert(settings);
+  constructor(nextChainLink, settings = {}) {
     this.nextLink = nextChainLink;
     this.settings = settings;
     const levels = [

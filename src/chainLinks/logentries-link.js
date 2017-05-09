@@ -4,8 +4,8 @@ const { getPrefix } = require('./../utils/message-formatter');
 const winston = require('winston');
 
 class LogentriesLink extends ChainLink {
-  constructor(settings = {}, nextChainLink) {
-    super(settings, nextChainLink);
+  constructor(settings, nextChainLink) {
+    super(nextChainLink, settings);
     if (this.settings.LOGS_TOKEN) {
       this.token = this.settings.LOGS_TOKEN;
       this.winston = new winston.Logger();

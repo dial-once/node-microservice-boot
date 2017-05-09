@@ -3,8 +3,8 @@ const { getPrefix } = require('./../utils/message-formatter');
 const winston = require('winston');
 
 class ConsoleLink extends ChainLink {
-  constructor(settings = {}, nextChainLink) {
-    super(settings, nextChainLink);
+  constructor(settings, nextChainLink) {
+    super(nextChainLink, settings);
     this.winston = new winston.Logger();
     this.winston.add(winston.transports.Console);
     this.chain = 'CONSOLE';

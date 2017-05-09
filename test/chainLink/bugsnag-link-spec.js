@@ -155,6 +155,19 @@ describe('Bugsnag chain link ', () => {
     assert(spy.called);
   });
 
+  it('should be able to block notify with a message meta notify parameter', () => {
+    const bugsnag = new BugsnagLink({
+      BUGS_TOKEN: '00000000-0000-0000-0000-000000000000',
+      BUGSNAG_LOGGING: 'true'
+    });
+    const spy = sinon.spy(bugsnag.notifier.notify);
+    bugsnag.notifier.notify = spy;
+    const message = format.packMessage();
+    message.meta.notify = false;
+    bugsnag.handle(message);
+    assert(!spy.called);
+  });
+
   it('should notify if message level > MIN_LOG_LEVEL [envs]', () => {
     const bugsnag = new BugsnagLink({
       BUGS_TOKEN: '00000000-0000-0000-0000-000000000000',

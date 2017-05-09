@@ -24,7 +24,7 @@ class LoggerChain {
   }
 
   log(logLevel, message, ...args) {
-    this.chainStart.handle(packMessage(logLevel, message, args));
+    this.chainStart.handle(packMessage(logLevel, message, ...args));
   }
 }
 

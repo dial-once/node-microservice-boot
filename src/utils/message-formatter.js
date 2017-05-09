@@ -20,7 +20,7 @@ function packMessage(level, msg, ...metas) {
       }
     });
   }
-  // if more than 1 arg, then all args with index [1+] are included as message meta
+  // all args with index [1+] are included as message meta
   if (metas.length > 0) {
     const metaData = metas.reduce((sum, next) => Object.assign(sum, next));
     Object.assign(message.meta, metaData);

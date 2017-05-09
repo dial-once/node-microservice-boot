@@ -4,20 +4,17 @@ if (process.env.NODE_ENV !== 'production') {
   process.env.CONSOLE_LOGGING = 'true';
 }
 
-/* Supported
-process.env.CONSOLE_LOGGING;
-process.env.BUGSNAG_LOGGING;
-process.env.LOGENTRIES_LOGGING;
-process.env.MIN_LOG_LEVEL
-process.env.MIN_LOG_LEVEL_CONSOLE
-process.env.MIN_LOG_LEVEL_LOGENTRIES
-process.env.MIN_LOG_LEVEL_BUGSNAG
-process.env.DEFAULT_LOG_LEVEL
-process.env.LOG_TIMESTAMP
-process.env.LOG_ENVIRONMENT
-process.env.LOG_LEVEL
-process.env.LOG_REQID
-*/
+process.env.BUGSNAG_LOGGING = 'true';
+process.env.LOGENTRIES_LOGGING = 'true';
+process.env.MIN_LOG_LEVEL = 'warn';
+process.env.MIN_LOG_LEVEL_CONSOLE = 'warn';
+process.env.MIN_LOG_LEVEL_LOGENTRIES = 'error';
+process.env.MIN_LOG_LEVEL_BUGSNAG = 'error';
+process.env.DEFAULT_LOG_LEVEL = 'info';
+process.env.LOG_TIMESTAMP = 'true';
+process.env.LOG_ENVIRONMENT = 'true';
+process.env.LOG_LEVEL = 'true';
+process.env.LOG_REQID = 'true';
 
 if (!process.env.HOSTNAME) {
   process.env.HOSTNAME = process.env.USER;

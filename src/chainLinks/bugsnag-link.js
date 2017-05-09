@@ -2,9 +2,9 @@ const ChainLink = require('./chain-link');
 const bugsnag = require('bugsnag');
 
 class BugsnagLink extends ChainLink {
-  constructor(settings = {}, nextChainLink) {
-    super(settings, nextChainLink);
-    if (settings.BUGS_TOKEN) {
+  constructor(settings, nextChainLink) {
+    super(nextChainLink, settings);
+    if (this.settings.BUGS_TOKEN) {
       bugsnag.register(settings.BUGS_TOKEN, {
         releaseStage: process.env.NODE_ENV || 'dev',
         notifyReleaseStages: ['production', 'staging']

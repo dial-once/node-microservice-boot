@@ -77,6 +77,13 @@ describe('Message formatter ', () => {
   });
 
   describe('getPrefix() ', () => {
+    beforeEach(() => {
+      delete process.env.LOG_TIMESTAMP;
+      delete process.env.LOG_ENVIRONMENT;
+      delete process.env.LOG_LEVEL;
+      delete process.env.LOG_REQID;
+    });
+
     afterEach(() => {
       delete process.env.LOG_TIMESTAMP;
       delete process.env.LOG_ENVIRONMENT;
