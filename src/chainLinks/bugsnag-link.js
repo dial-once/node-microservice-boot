@@ -26,7 +26,7 @@ class BugsnagLink extends ChainLink {
   constructor(settings, nextChainLink) {
     super(nextChainLink, settings);
     if (this.settings.BUGS_TOKEN) {
-      bugsnag.register(settings.BUGS_TOKEN, {
+      bugsnag.register(this.settings.BUGS_TOKEN, {
         releaseStage: process.env.NODE_ENV || 'dev',
         notifyReleaseStages: ['production', 'staging']
       });
@@ -75,7 +75,13 @@ class BugsnagLink extends ChainLink {
       const messageLevel = this.logLevels.has(message.level) ? message.level : this.logLevels.get('default');
       const minLogLevel = this.getMinLogLevel(this.chain);
       if (this.logLevels.get(messageLevel) >= this.logLevels.get(minLogLevel) && notify) {
-        this.notifier.notify(message);
+        if (message.meta.stack !== undefined) {
+          const error = new Error(message.text);
+          error.stack = message.meta.stack;
+          this.notifier.notify(error, { user: message.meta });
+        } else {
+          this.notifier.notify(message.text, { user: message.meta });
+        }
       }
     }
     this.next(message);

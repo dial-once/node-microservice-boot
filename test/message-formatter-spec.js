@@ -17,7 +17,7 @@ describe('Message formatter ', () => {
       const message = format.packMessage(null, null);
       assert(message);
       assert.equal(message.level, 'info');
-      assert.equal(message.text, null);
+      assert.equal(message.text, '');
       assert.equal(message.meta.instanceId, process.env.HOSTNAME);
     });
 
@@ -25,7 +25,7 @@ describe('Message formatter ', () => {
       const message = format.packMessage(undefined, undefined);
       assert(message);
       assert.equal(message.level, 'info');
-      assert.equal(message.text, null);
+      assert.equal(message.text, '');
       assert.equal(message.meta.instanceId, process.env.HOSTNAME);
     });
 

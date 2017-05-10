@@ -109,7 +109,7 @@ module.exports = (config) => {
   instance = {
     chain,
     logger: new Winston(chain),
-    notifier: new Bugsnag(chain)
+    notifier: new Bugsnag(settings)
   };
   return instance;
 };

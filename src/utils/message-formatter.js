@@ -15,7 +15,7 @@ function packMessage(level, msg, ...metas) {
   // if plain text
   const message = {
     level,
-    text: msg,
+    text: msg || '',
     meta: {
       instanceId: process.env.HOSTNAME,
       notify: true

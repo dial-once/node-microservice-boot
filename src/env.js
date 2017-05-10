@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
 process.env.BUGSNAG_LOGGING = 'true';
 process.env.LOGENTRIES_LOGGING = 'true';
 process.env.MIN_LOG_LEVEL = 'warn';
-process.env.MIN_LOG_LEVEL_CONSOLE = 'warn';
+process.env.MIN_LOG_LEVEL_CONSOLE = 'info';
 process.env.MIN_LOG_LEVEL_LOGENTRIES = 'error';
 process.env.MIN_LOG_LEVEL_BUGSNAG = 'error';
 process.env.DEFAULT_LOG_LEVEL = 'info';
