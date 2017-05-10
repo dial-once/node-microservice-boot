@@ -3,6 +3,20 @@ const sinon = require('sinon');
 const ChainLink = require('../../src/chainLinks/chain-link');
 
 describe('Chain link ', () => {
+  before(() => {
+    delete process.env.BUGSNAG_LOGGING;
+    delete process.env.LOGENTRIES_LOGGING;
+    delete process.env.MIN_LOG_LEVEL;
+    delete process.env.MIN_LOG_LEVEL_CONSOLE;
+    delete process.env.MIN_LOG_LEVEL_LOGENTRIES;
+    delete process.env.MIN_LOG_LEVEL_BUGSNAG;
+    delete process.env.DEFAULT_LOG_LEVEL;
+    delete process.env.LOG_TIMESTAMP;
+    delete process.env.LOG_ENVIRONMENT;
+    delete process.env.LOG_LEVEL;
+    delete process.env.LOG_REQID;
+  });
+
   after(() => {
     delete process.env.MIN_LOG_LEVEL;
     delete process.env.MIN_LOG_LEVEL_CONSOLE;

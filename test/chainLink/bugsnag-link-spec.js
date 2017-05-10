@@ -5,6 +5,20 @@ const ChainLink = require('../../src/chainLinks/chain-link');
 const format = require('../../src/utils/message-formatter');
 
 describe('Bugsnag chain link ', () => {
+  before(() => {
+    delete process.env.BUGSNAG_LOGGING;
+    delete process.env.LOGENTRIES_LOGGING;
+    delete process.env.MIN_LOG_LEVEL;
+    delete process.env.MIN_LOG_LEVEL_CONSOLE;
+    delete process.env.MIN_LOG_LEVEL_LOGENTRIES;
+    delete process.env.MIN_LOG_LEVEL_BUGSNAG;
+    delete process.env.DEFAULT_LOG_LEVEL;
+    delete process.env.LOG_TIMESTAMP;
+    delete process.env.LOG_ENVIRONMENT;
+    delete process.env.LOG_LEVEL;
+    delete process.env.LOG_REQID;
+  });
+
   beforeEach(() => {
     this.consoleWarn = console.warn;
   });
@@ -133,8 +147,7 @@ describe('Bugsnag chain link ', () => {
     });
     const spy = sinon.spy(bugsnag.notifier.notify);
     bugsnag.notifier.notify = spy;
-    const message = format.packMessage();
-    message.level = 'warn';
+    const message = format.packMessage('warn');
     process.env.MIN_LOG_LEVEL = 'error';
     process.env.MIN_LOG_LEVEL_BUGSNAG = 'warn';
     bugsnag.handle(message);
@@ -148,8 +161,7 @@ describe('Bugsnag chain link ', () => {
     });
     const spy = sinon.spy(bugsnag.notifier.notify);
     bugsnag.notifier.notify = spy;
-    const message = format.packMessage();
-    message.level = 'error';
+    const message = format.packMessage('error');
     process.env.MIN_LOG_LEVEL = 'error';
     bugsnag.handle(message);
     assert(spy.called);
@@ -162,8 +174,7 @@ describe('Bugsnag chain link ', () => {
     });
     const spy = sinon.spy(bugsnag.notifier.notify);
     bugsnag.notifier.notify = spy;
-    const message = format.packMessage();
-    message.meta.notify = false;
+    const message = format.packMessage(null, null, { notify: false });
     bugsnag.handle(message);
     assert(!spy.called);
   });
@@ -175,8 +186,7 @@ describe('Bugsnag chain link ', () => {
     });
     const spy = sinon.spy(bugsnag.notifier.notify);
     bugsnag.notifier.notify = spy;
-    const message = format.packMessage();
-    message.level = 'error';
+    const message = format.packMessage('error');
     process.env.MIN_LOG_LEVEL = 'warn';
     bugsnag.handle(message);
     assert(spy.called);

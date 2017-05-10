@@ -4,7 +4,21 @@ const ConsoleLink = require('../../src/chainLinks/console-link');
 const ChainLink = require('../../src/chainLinks/chain-link');
 const format = require('../../src/utils/message-formatter');
 
-describe('Bugsnag chain link ', () => {
+describe('Console chain link ', () => {
+  before(() => {
+    delete process.env.BUGSNAG_LOGGING;
+    delete process.env.LOGENTRIES_LOGGING;
+    delete process.env.MIN_LOG_LEVEL;
+    delete process.env.MIN_LOG_LEVEL_CONSOLE;
+    delete process.env.MIN_LOG_LEVEL_LOGENTRIES;
+    delete process.env.MIN_LOG_LEVEL_BUGSNAG;
+    delete process.env.DEFAULT_LOG_LEVEL;
+    delete process.env.LOG_TIMESTAMP;
+    delete process.env.LOG_ENVIRONMENT;
+    delete process.env.LOG_LEVEL;
+    delete process.env.LOG_REQID;
+  });
+
   afterEach(() => {
     delete process.env.CONSOLE_LOGGING;
     delete process.env.MIN_LOG_LEVEL;
@@ -109,8 +123,7 @@ describe('Bugsnag chain link ', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: 'true' });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage();
-    message.level = 'warn';
+    const message = format.packMessage('warn');
     process.env.MIN_LOG_LEVEL = 'error';
     process.env.MIN_LOG_LEVEL_CONSOLE = 'warn';
     consoleChain.handle(message);
@@ -121,8 +134,7 @@ describe('Bugsnag chain link ', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: 'true' });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage();
-    message.level = 'error';
+    const message = format.packMessage('error');
     process.env.MIN_LOG_LEVEL = 'error';
     consoleChain.handle(message);
     assert(spy.called);
@@ -132,8 +144,7 @@ describe('Bugsnag chain link ', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: 'true' });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage();
-    message.level = 'error';
+    const message = format.packMessage('error');
     process.env.MIN_LOG_LEVEL = 'warn';
     consoleChain.handle(message);
     assert(spy.called);

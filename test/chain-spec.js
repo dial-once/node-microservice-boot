@@ -24,6 +24,7 @@ describe('Logger chain ', () => {
     const chain = loggerInstance.chain;
     assert.equal(typeof chain, 'object');
     assert.equal(typeof chain.settings, 'object');
+    assert.equal(typeof chain.ChainLink, 'function');
     assert.equal(typeof chain.chainStart, 'object');
     assert.equal(typeof chain.chainEnd, 'object');
     assert.equal(typeof chain.bugsnagChain, 'object');
@@ -39,6 +40,7 @@ describe('Logger chain ', () => {
     assert.equal(typeof chain, 'object');
     assert.equal(typeof chain.settings, 'object');
     assert.equal(typeof chain.chainStart, 'object');
+    assert.equal(typeof chain.ChainLink, 'function');
     assert.equal(typeof chain.chainEnd, 'object');
     assert.equal(typeof chain.bugsnagChain, 'object');
     assert.equal(typeof chain.logentriesChain, 'object');
@@ -52,6 +54,7 @@ describe('Logger chain ', () => {
     assert.equal(typeof chain, 'object');
     assert.equal(typeof chain.settings, 'object');
     assert.equal(typeof chain.chainStart, 'object');
+    assert.equal(typeof chain.ChainLink, 'function');
     assert.equal(typeof chain.chainEnd, 'object');
     assert.equal(typeof chain.bugsnagChain, 'object');
     assert.equal(typeof chain.logentriesChain, 'object');
