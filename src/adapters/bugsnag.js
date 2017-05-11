@@ -1,4 +1,4 @@
-const { packMessage } = require('../utils/message-formatter');
+const Message = require('./../modules/message');
 const BugsnagChainLink = require('../chainLinks/bugsnag-link');
 
 /**
@@ -18,6 +18,7 @@ class Bugsnag {
     // if notify @function is called, a user probably just wants it to be notified without progressing further along the chain
     // that is why we use a seprate instance of a chain link instead of a loggerChain.bugsnagChailLink
     this.bugsnag = new BugsnagChainLink(settings, null);
+    this.requestHandler = this.bugsnag.notifier ? this.bugsnag.notifier.requestHandler : undefined;
   }
 
   /**
@@ -27,7 +28,7 @@ class Bugsnag {
     @param args {Object} - metadata to include into the notification
   **/
   notify(message, ...metadata) {
-    this.bugsnag.handle(packMessage('error', message, ...metadata));
+    this.bugsnag.handle(new Message('error', message, ...metadata));
   }
 }
 

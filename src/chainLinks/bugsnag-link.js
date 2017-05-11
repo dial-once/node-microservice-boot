@@ -9,10 +9,8 @@ const bugsnag = require('bugsnag');
 
   Has the following configurations (either env var or settings param):
   - BUGSNAG_LOGGING {'true'|'false'} - switches on / off the use of this chain link
-  - MIN_LOG_LEVEL_BUGSNAG = {'silly'|'verbose'|'debug'|'info'|'warn'|'error'} - min log level of a message to notify
-  This config has a higher priority than a global DEFAULT_LOG_LEVEl config
   @see ChainLink @class for info on the log level priorities
-  If a message's level is >= than a MIN_LOG_LEVEL_BUGSANG - it will be notified. Otherwise - skipped
+  If a message's level is >= than a error - it will be notified. Otherwise - skipped
 
   Environment variables have a higher priority over a settings object parameters
 **/
@@ -25,13 +23,14 @@ class BugsnagLink extends ChainLink {
   **/
   constructor(settings, nextChainLink) {
     super(nextChainLink, settings);
+    const notifyReleaseStages = process.env.BUGSNAG_RELEASE_STAGES ?
+      process.env.BUGSNAG_RELEASE_STAGES.split(',') : this.settings.BUGSNAG_RELEASE_STAGES;
     if (this.settings.BUGS_TOKEN) {
       bugsnag.register(this.settings.BUGS_TOKEN, {
-        releaseStage: process.env.NODE_ENV || 'dev',
-        notifyReleaseStages: ['production', 'staging']
+        releaseStage: process.env.NODE_ENV || 'local',
+        notifyReleaseStages
       });
       this.notifier = bugsnag;
-      this.chain = 'BUGSNAG';
     } else {
       console.warn('Bugsnag logging was not initialized due to a missing token');
     }
@@ -47,13 +46,13 @@ class BugsnagLink extends ChainLink {
   }
 
   /**
-    @function willBeUsed
+    @function isEnabled
     Check if a chain link will be used
     Depends on configuration env variables / settings object parameters
     Checks BUGSNAG_LOGGING env / settings object param
     @return {boolean} - if this chain link is switched on / off
   **/
-  willBeUsed() {
+  isEnabled() {
     return ['true', 'false'].includes(process.env.BUGSNAG_LOGGING) ?
       process.env.BUGSNAG_LOGGING === 'true' : !!this.settings.BUGSNAG_LOGGING;
   }
@@ -62,19 +61,19 @@ class BugsnagLink extends ChainLink {
     @function handle
     Process a message and notify it if the chain link is switched on and message's log level is >= than MIN_LOG_LEVEL
     Finally, pass the message to the next chain link if any
-    @param message {Object} - message package object
+    @param data {Object} - message package object
     @see LoggerChain message package object structure description
 
     This function is NOT ALLOWED to modify the message
     This function HAS to invoke the next() @function and pass the message further along the chain
   **/
-  handle(message) {
-    const shouldBeUsed = this.willBeUsed();
-    if (this.isReady() && shouldBeUsed && message) {
+  handle(data) {
+    const shouldBeUsed = this.isEnabled();
+    if (this.isReady() && shouldBeUsed && data) {
+      const message = data.payload;
       const notify = (typeof message.meta.notify === 'boolean') ? message.meta.notify : shouldBeUsed;
       const messageLevel = this.logLevels.has(message.level) ? message.level : this.logLevels.get('default');
-      const minLogLevel = this.getMinLogLevel(this.chain);
-      if (this.logLevels.get(messageLevel) >= this.logLevels.get(minLogLevel) && notify) {
+      if (this.logLevels.get(messageLevel) >= this.logLevels.get('error') && notify) {
         if (message.meta.stack !== undefined) {
           const error = new Error(message.text);
           error.stack = message.meta.stack;
@@ -84,7 +83,7 @@ class BugsnagLink extends ChainLink {
         }
       }
     }
-    this.next(message);
+    this.next(data);
   }
 }
 

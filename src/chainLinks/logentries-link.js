@@ -30,7 +30,7 @@ class LogentriesLink extends ChainLink {
     if (this.settings.LOGS_TOKEN) {
       this.token = this.settings.LOGS_TOKEN;
       this.winston = new winston.Logger();
-      this.chain = 'LOGENTRIES';
+      this.name = 'LOGENTRIES';
 
       this.winston.rewriters.push((level, msg, meta) => {
         const metadata = Object.assign({}, meta);
@@ -55,13 +55,13 @@ class LogentriesLink extends ChainLink {
   }
 
   /**
-    @function willBeUsed
+    @function isEnabled
     Check if a chain link will be used
     Depends on configuration env variables / settings object parameters
     Checks LOGENTRIES_LOGGING env / settings object param
     @return {boolean} - if this chain link is switched on / off
   **/
-  willBeUsed() {
+  isEnabled() {
     return ['true', 'false'].includes(process.env.LOGENTRIES_LOGGING) ?
       process.env.LOGENTRIES_LOGGING === 'true' : !!this.settings.LOGENTRIES_LOGGING;
   }
@@ -70,22 +70,23 @@ class LogentriesLink extends ChainLink {
     @function handle
     Process a message and log it if the chain link is switched on and message's log level is >= than MIN_LOG_LEVEL
     Finally, pass the message to the next chain link if any
-    @param message {Object} - message package object
+    @param data {Object} - message package object
     @see LoggerChain message package object structure description
 
     This function is NOT ALLOWED to modify the message
     This function HAS to invoke the next() @function and pass the message further along the chain
   **/
-  handle(message) {
-    if (this.isReady() && this.willBeUsed() && message) {
+  handle(data) {
+    if (this.isReady() && this.isEnabled() && data) {
+      const message = data.payload;
       const messageLevel = this.logLevels.has(message.level) ? message.level : this.logLevels.get('default');
-      const minLogLevel = this.getMinLogLevel(this.chain);
+      const minLogLevel = this.getMinLogLevel(this.name);
       if (this.logLevels.get(messageLevel) >= this.logLevels.get(minLogLevel)) {
         const prefix = getPrefix(message, this.settings);
         this.winston.log(messageLevel, `${prefix}${message.text}`, message.meta);
       }
     }
-    this.next(message);
+    this.next(data);
   }
 }
 

@@ -7,10 +7,12 @@ if (process.env.NODE_ENV !== 'production') {
 process.env.BUGSNAG_LOGGING = 'true';
 process.env.LOGENTRIES_LOGGING = 'true';
 process.env.MIN_LOG_LEVEL = 'warn';
+process.env.DEFAULT_LOG_LEVEL = 'info';
+
 process.env.MIN_LOG_LEVEL_CONSOLE = 'info';
 process.env.MIN_LOG_LEVEL_LOGENTRIES = 'error';
-process.env.MIN_LOG_LEVEL_BUGSNAG = 'error';
-process.env.DEFAULT_LOG_LEVEL = 'info';
+process.env.BUGSNAG_RELEASE_STAGES = 'production,staging';
+
 process.env.LOG_TIMESTAMP = 'true';
 process.env.LOG_ENVIRONMENT = 'true';
 process.env.LOG_LEVEL = 'true';

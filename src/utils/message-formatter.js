@@ -1,45 +1,7 @@
+const Message = require('../modules/message');
 /**
   @module with utilities for chain links
 **/
-
-/**
-  @function packMessage
-  Convert the given parameters into a frozen (@see Object.freeze()) message package
-  @param level {string} - a message log level (@see ChainLink @class for additional info)
-  @param msg {Object|Error} - a message payload. Either a text string or an Error object
-  @param metas {Object} - metadata
-  @return {Object} - frozen message package object
-**/
-function packMessage(level, msg, ...metas) {
-  level = level || process.env.DEFAULT_LOG_LEVEL || 'info'; //eslint-disable-line
-  // if plain text
-  const message = {
-    level,
-    text: msg || '',
-    meta: {
-      instanceId: process.env.HOSTNAME,
-      notify: true
-    }
-  };
-
-  // if error
-  if (msg instanceof Error) {
-    Object.assign(message, {
-      text: msg.message || 'Error: ',
-      meta: {
-        stack: msg.stack,
-        notify: true,
-        instanceId: process.env.HOSTNAME
-      }
-    });
-  }
-  // all metas are included as message meta
-  if (metas.length > 0) {
-    const metaData = metas.reduce((sum, next) => Object.assign(sum, next));
-    Object.assign(message.meta, metaData);
-  }
-  return Object.freeze(message);
-}
 
 /**
   @function getPrefix
@@ -52,11 +14,12 @@ function packMessage(level, msg, ...metas) {
 
   reqId will be included only if provided in the message meta
 
-  @param message {Object} - message package object
+  @param data {Message|Object} - message package object
   @param settings {Object} - chain settings. Fallsa back to {} if not given
   @return {string} - Prefix for the log message. Or an empty string of no prefix data logging is enabled
 **/
-function getPrefix(message, settings = {}) {
+function getPrefix(data, settings = {}) {
+  const message = data instanceof Message ? data.payload : data;
   const boolean = ['true', 'false'];
   const includeTimestamp = boolean.includes(process.env.LOG_TIMESTAMP) ?
     process.env.LOG_TIMESTAMP === 'true' : !!settings.LOG_TIMESTAMP;
@@ -78,6 +41,5 @@ function getPrefix(message, settings = {}) {
 
 
 module.exports = {
-  packMessage,
   getPrefix
 };

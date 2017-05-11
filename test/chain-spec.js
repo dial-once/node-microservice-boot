@@ -2,13 +2,6 @@ const modulePath = './../src/index';
 const loggerModule = require('./../src/index');
 const assert = require('assert');
 
-
-/**
-console.error = (e) => {
-  assert.equal(e, 'Dial Once boot module should be initilised before used without config.');
-  done();
-};
-**/
 describe('Logger chain ', () => {
   before(() => {
     assert.equal(typeof loggerModule, 'function');
@@ -27,9 +20,9 @@ describe('Logger chain ', () => {
     assert.equal(typeof chain.ChainLink, 'function');
     assert.equal(typeof chain.chainStart, 'object');
     assert.equal(typeof chain.chainEnd, 'object');
-    assert.equal(typeof chain.bugsnagChain, 'object');
-    assert.equal(typeof chain.logentriesChain, 'object');
-    assert.equal(typeof chain.consoleChain, 'object');
+    assert.equal(typeof chain.bugsnagChainLink, 'object');
+    assert.equal(typeof chain.logentriesChainLink, 'object');
+    assert.equal(typeof chain.consoleChainLink, 'object');
     assert.equal(typeof chain.log, 'function');
   });
 
@@ -42,9 +35,9 @@ describe('Logger chain ', () => {
     assert.equal(typeof chain.chainStart, 'object');
     assert.equal(typeof chain.ChainLink, 'function');
     assert.equal(typeof chain.chainEnd, 'object');
-    assert.equal(typeof chain.bugsnagChain, 'object');
-    assert.equal(typeof chain.logentriesChain, 'object');
-    assert.equal(typeof chain.consoleChain, 'object');
+    assert.equal(typeof chain.bugsnagChainLink, 'object');
+    assert.equal(typeof chain.logentriesChainLink, 'object');
+    assert.equal(typeof chain.consoleChainLink, 'object');
     assert.equal(typeof chain.log, 'function');
   });
 
@@ -56,9 +49,9 @@ describe('Logger chain ', () => {
     assert.equal(typeof chain.chainStart, 'object');
     assert.equal(typeof chain.ChainLink, 'function');
     assert.equal(typeof chain.chainEnd, 'object');
-    assert.equal(typeof chain.bugsnagChain, 'object');
-    assert.equal(typeof chain.logentriesChain, 'object');
-    assert.equal(typeof chain.consoleChain, 'object');
+    assert.equal(typeof chain.bugsnagChainLink, 'object');
+    assert.equal(typeof chain.logentriesChainLink, 'object');
+    assert.equal(typeof chain.consoleChainLink, 'object');
     assert.equal(typeof chain.log, 'function');
   });
 

@@ -33,7 +33,7 @@ describe('Chain link ', () => {
     assert.equal(typeof chainLink.next, 'function');
     assert.equal(typeof chainLink.link, 'function');
     assert.equal(typeof chainLink.isReady, 'function');
-    assert.equal(typeof chainLink.willBeUsed, 'function');
+    assert.equal(typeof chainLink.isEnabled, 'function');
     assert.equal(typeof chainLink.handle, 'function');
   });
 
@@ -109,11 +109,11 @@ describe('Chain link ', () => {
       try {
         fn();
       } catch (e) {
-        assert.equal(e.message, 'Not implemented exception');
+        assert.equal(e.message, 'Not implemented');
       }
     }
     fire(chainLink.isReady);
-    fire(chainLink.willBeUsed);
+    fire(chainLink.isEnabled);
     fire(chainLink.handle);
   });
 });

@@ -2,7 +2,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const BugsnagLink = require('../../src/chainLinks/bugsnag-link');
 const ChainLink = require('../../src/chainLinks/chain-link');
-const format = require('../../src/utils/message-formatter');
+const Message = require('../../src/modules/message');
 
 describe('Bugsnag chain link ', () => {
   before(() => {
@@ -11,7 +11,6 @@ describe('Bugsnag chain link ', () => {
     delete process.env.MIN_LOG_LEVEL;
     delete process.env.MIN_LOG_LEVEL_CONSOLE;
     delete process.env.MIN_LOG_LEVEL_LOGENTRIES;
-    delete process.env.MIN_LOG_LEVEL_BUGSNAG;
     delete process.env.DEFAULT_LOG_LEVEL;
     delete process.env.LOG_TIMESTAMP;
     delete process.env.LOG_ENVIRONMENT;
@@ -41,7 +40,7 @@ describe('Bugsnag chain link ', () => {
     assert(typeof bugsnag, 'object');
     assert(bugsnag instanceof ChainLink);
     assert(typeof bugsnag.isReady, 'function');
-    assert(typeof bugsnag.willBeUsed, 'function');
+    assert(typeof bugsnag.isEnabled, 'function');
     assert(typeof bugsnag.handle, 'function');
   });
 
@@ -66,129 +65,89 @@ describe('Bugsnag chain link ', () => {
 
   it('should indicate if it is switched on/off [settings]', () => {
     let bugsnag = new BugsnagLink({ BUGSNAG_LOGGING: true });
-    assert.equal(bugsnag.willBeUsed(), true);
+    assert.equal(bugsnag.isEnabled(), true);
     bugsnag = new BugsnagLink({ BUGSNAG_LOGGING: false });
-    assert.equal(bugsnag.willBeUsed(), false);
+    assert.equal(bugsnag.isEnabled(), false);
     bugsnag = new BugsnagLink({});
-    assert.equal(bugsnag.willBeUsed(), false);
+    assert.equal(bugsnag.isEnabled(), false);
   });
 
   it('should indicate if it is switched on/off [envs]', () => {
     const bugsnag = new BugsnagLink({});
-    assert.equal(bugsnag.willBeUsed(), false);
+    assert.equal(bugsnag.isEnabled(), false);
     process.env.BUGSNAG_LOGGING = true;
-    assert.equal(bugsnag.willBeUsed(), true);
+    assert.equal(bugsnag.isEnabled(), true);
     process.env.BUGSNAG_LOGGING = false;
-    assert.equal(bugsnag.willBeUsed(), false);
+    assert.equal(bugsnag.isEnabled(), false);
   });
 
   it('should indicate if it is switched on/off [envs should have more privilege]', () => {
     const bugsnag = new BugsnagLink({ BUGSNAG_LOGGING: true });
-    assert.equal(bugsnag.willBeUsed(), true);
+    assert.equal(bugsnag.isEnabled(), true);
     process.env.BUGSNAG_LOGGING = false;
-    assert.equal(bugsnag.willBeUsed(), false);
+    assert.equal(bugsnag.isEnabled(), false);
     process.env.BUGSNAG_LOGGING = undefined;
-    assert.equal(bugsnag.willBeUsed(), true);
+    assert.equal(bugsnag.isEnabled(), true);
   });
 
   it('should not break down if null is notified', () => {
-    const bugsnag = new BugsnagLink({ BUGS_TOKEN: '00000000-0000-0000-0000-000000000000', BUGSNAG_LOGGING: 'true' });
+    const bugsnag = new BugsnagLink({ BUGS_TOKEN: '00000000-0000-0000-0000-000000000000', BUGSNAG_LOGGING: true });
     bugsnag.handle(null);
   });
 
   it('should notify message if BUGSNAG_LOGGING = true', () => {
-    const bugsnag = new BugsnagLink({ BUGS_TOKEN: '00000000-0000-0000-0000-000000000000', BUGSNAG_LOGGING: 'true' });
+    const bugsnag = new BugsnagLink({ BUGS_TOKEN: '00000000-0000-0000-0000-000000000000', BUGSNAG_LOGGING: true });
     const spy = sinon.spy(bugsnag.notifier.notify);
     bugsnag.notifier.notify = spy;
-    const message = format.packMessage();
+    const message = new Message('error');
     bugsnag.handle(message);
     assert(spy.called);
   });
 
   it('should not notify message if BUGSNAG_LOGGING = false', () => {
-    const bugsnag = new BugsnagLink({ BUGS_TOKEN: '00000000-0000-0000-0000-000000000000', BUGSNAG_LOGGING: 'false' });
+    const bugsnag = new BugsnagLink({ BUGS_TOKEN: '00000000-0000-0000-0000-000000000000', BUGSNAG_LOGGING: false });
     const spy = sinon.spy(bugsnag.notifier.notify);
     bugsnag.notifier.notify = spy;
-    const message = format.packMessage();
+    const message = new Message('error');
     bugsnag.handle(message);
-    assert(spy.called);
+    assert(!spy.called);
   });
 
-  it('should not notify if message level < MIN_LOG_LEVEL [settings]', () => {
+  it('should not notify if message level !== error', () => {
     const bugsnag = new BugsnagLink({
       BUGS_TOKEN: '00000000-0000-0000-0000-000000000000',
-      BUGSNAG_LOGGING: 'true',
+      BUGSNAG_LOGGING: true,
       MIN_LOG_LEVEL: 'error'
     });
     const spy = sinon.spy(bugsnag.notifier.notify);
     bugsnag.notifier.notify = spy;
-    const message = format.packMessage();
+    const message = new Message();
     bugsnag.handle(message);
     assert(!spy.called);
   });
 
-  it('should not notify if message level < MIN_LOG_LEVEL [envs]', () => {
+  it('should notify if message level = error', () => {
     const bugsnag = new BugsnagLink({
       BUGS_TOKEN: '00000000-0000-0000-0000-000000000000',
-      BUGSNAG_LOGGING: 'true'
+      BUGSNAG_LOGGING: true
     });
     const spy = sinon.spy(bugsnag.notifier.notify);
     bugsnag.notifier.notify = spy;
-    const message = format.packMessage();
-    process.env.MIN_LOG_LEVEL = 'error';
-    bugsnag.handle(message);
-    assert(!spy.called);
-  });
-
-  it('should notify if message level >= MIN_LOG_LEVEL_BUGSNAG but < MIN_LOG_LEVEL [envs]', () => {
-    const bugsnag = new BugsnagLink({
-      BUGS_TOKEN: '00000000-0000-0000-0000-000000000000',
-      BUGSNAG_LOGGING: 'true'
-    });
-    const spy = sinon.spy(bugsnag.notifier.notify);
-    bugsnag.notifier.notify = spy;
-    const message = format.packMessage('warn');
-    process.env.MIN_LOG_LEVEL = 'error';
-    process.env.MIN_LOG_LEVEL_BUGSNAG = 'warn';
+    const message = new Message('error');
     bugsnag.handle(message);
     assert(spy.called);
   });
 
-  it('should notify if message level = MIN_LOG_LEVEL [envs]', () => {
-    const bugsnag = new BugsnagLink({
-      BUGS_TOKEN: '00000000-0000-0000-0000-000000000000',
-      BUGSNAG_LOGGING: 'true'
-    });
-    const spy = sinon.spy(bugsnag.notifier.notify);
-    bugsnag.notifier.notify = spy;
-    const message = format.packMessage('error');
-    process.env.MIN_LOG_LEVEL = 'error';
-    bugsnag.handle(message);
-    assert(spy.called);
-  });
 
   it('should be able to block notify with a message meta notify parameter', () => {
     const bugsnag = new BugsnagLink({
       BUGS_TOKEN: '00000000-0000-0000-0000-000000000000',
-      BUGSNAG_LOGGING: 'true'
+      BUGSNAG_LOGGING: true
     });
     const spy = sinon.spy(bugsnag.notifier.notify);
     bugsnag.notifier.notify = spy;
-    const message = format.packMessage(null, null, { notify: false });
+    const message = new Message(null, null, { notify: false });
     bugsnag.handle(message);
     assert(!spy.called);
-  });
-
-  it('should notify if message level > MIN_LOG_LEVEL [envs]', () => {
-    const bugsnag = new BugsnagLink({
-      BUGS_TOKEN: '00000000-0000-0000-0000-000000000000',
-      BUGSNAG_LOGGING: 'true'
-    });
-    const spy = sinon.spy(bugsnag.notifier.notify);
-    bugsnag.notifier.notify = spy;
-    const message = format.packMessage('error');
-    process.env.MIN_LOG_LEVEL = 'warn';
-    bugsnag.handle(message);
-    assert(spy.called);
   });
 });

@@ -1,4 +1,5 @@
 const assert = require('assert');
+const sinon = require('sinon');
 
 const modulePath = '../src/index';
 
@@ -6,24 +7,20 @@ const modulePath = '../src/index';
 describe('entry point', () => {
   beforeEach(() => {
     delete require.cache[require.resolve(modulePath)];
-    this.consoleKeep = console.error;
   });
 
   afterEach(() => {
     delete require.cache[require.resolve(modulePath)];
-    console.error = this.consoleKeep;
   });
 
   it('should return a function', () => {
     assert(typeof require(modulePath), 'function');
   });
 
-  it('should execute without an exception (no params) but print a warning message', (done) => {
-    console.error = (e) => {
-      assert.equal(e, 'Dial Once boot module should be initilised before used without config.');
-      done();
-    };
+  it('should execute without an exception (no params) but print a warning message', () => {
+    const spy = sinon.spy(console, 'error');
     require(modulePath)();
+    assert(spy.calledWith('Dial Once boot module should be initilised before used without config.'));
   });
 
   it('should execute without an exception (params)', () => {
@@ -36,12 +33,9 @@ describe('entry point', () => {
     assert.notEqual(index.logger, undefined);
   });
 
-  it('should return a logger and a notifier (no params) without warning, already initialised', (done) => {
+  it('should return a logger and a notifier (no params) without warning, already initialised', () => {
     const index = require('../src/index')();
-
-    console.error = done;
     assert.notEqual(index.notifier, undefined);
     assert.notEqual(index.logger, undefined);
-    done();
   });
 });

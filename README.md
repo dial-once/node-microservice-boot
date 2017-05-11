@@ -29,7 +29,6 @@ require('@dialonce/boot')({
     DEFAULT_LOG_LEVEL: '', // default log level for message if not given
     MIN_LOG_LEVEL_CONSOLE: '', // minimal log level to process a message by console logger chain link
     MIN_LOG_LEVEL_LOGENTRIES: '', // minimal log level to process a message by logentries logger chain link
-    MIN_LOG_LEVEL_BUGSNAG: '', // minimal log level to process a message by a bugsnag logger chain link
     CONSOLE_LOGGING: true || false, // switch on / off console logger chain link
     LOGENTRIES_LOGGING: true || false, // switch on / off logentries logger chain link
     BUGSNAG_LOGGING: true || false // switch on / off bugsnag logger chain link
@@ -85,6 +84,7 @@ notifier.notify(message, ...metadata);
 
 // property
 notifier.settings // configuration object
+notifier.requestHandler // standard bugsnag requestHandler middleware
 ```
 
 **Chain** exposes:
@@ -160,7 +160,7 @@ Default:
 Default:
 * A chain is ready if ``BUGS_TOKEN`` is present in settings
 * A chain will be used if ``BUGSNAG_LOGGING='true'``either as an env var or a property in the settings object
-* A message will be sent if ``message.level`` >= ``MIN_LOG_LEVEL_BUGSNAG || MIN_LOG_LEVEL`` and ``message.meta.notify=true``
+* A message will be sent if ``message.level`` >= ``error`` and ``message.meta.notify=true``
 
 To change the default logic, change the values of the mentioned properties.
 
@@ -180,7 +180,7 @@ getMinLogLevel(chain) // returns {string} - global MIN_LOG_LEVEL or chain-specif
 next(message) // pass a message to the next chain link
 link(chainLink) // set chainLink as a next chain link for the current one
 isReady() // returns {boolean} - if a chainLink is switched on / off (described above)
-willBeUsed() // returns {boolean} - whether a chainLink is going to be used (described above)
+isEnabled() // returns {boolean} - whether a chainLink is going to be used (described above)
 handle(message) // process a message and move to the next chain link
 
 // properties

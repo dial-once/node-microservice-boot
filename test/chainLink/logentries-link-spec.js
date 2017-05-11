@@ -2,7 +2,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const LogentriesLink = require('../../src/chainLinks/logentries-link');
 const ChainLink = require('../../src/chainLinks/chain-link');
-const format = require('../../src/utils/message-formatter');
+const Message = require('../../src/modules/message');
 
 describe('Logentries chain link ', () => {
   before(() => {
@@ -41,7 +41,7 @@ describe('Logentries chain link ', () => {
     assert(typeof logentries, 'object');
     assert(logentries instanceof ChainLink);
     assert(typeof logentries.isReady, 'function');
-    assert(typeof logentries.willBeUsed, 'function');
+    assert(typeof logentries.isEnabled, 'function');
     assert(typeof logentries.handle, 'function');
   });
 
@@ -66,29 +66,29 @@ describe('Logentries chain link ', () => {
 
   it('should indicate if it is switched on/off [settings]', () => {
     let logentries = new LogentriesLink({ LOGENTRIES_LOGGING: true });
-    assert.equal(logentries.willBeUsed(), true);
+    assert.equal(logentries.isEnabled(), true);
     logentries = new LogentriesLink({ LOGENTRIES_LOGGING: false });
-    assert.equal(logentries.willBeUsed(), false);
+    assert.equal(logentries.isEnabled(), false);
     logentries = new LogentriesLink({});
-    assert.equal(logentries.willBeUsed(), false);
+    assert.equal(logentries.isEnabled(), false);
   });
 
   it('should indicate if it is switched on/off [envs]', () => {
     const logentries = new LogentriesLink({});
-    assert.equal(logentries.willBeUsed(), false);
+    assert.equal(logentries.isEnabled(), false);
     process.env.LOGENTRIES_LOGGING = true;
-    assert.equal(logentries.willBeUsed(), true);
+    assert.equal(logentries.isEnabled(), true);
     process.env.LOGENTRIES_LOGGING = false;
-    assert.equal(logentries.willBeUsed(), false);
+    assert.equal(logentries.isEnabled(), false);
   });
 
   it('should indicate if it is switched on/off [envs should have more privilege]', () => {
     const logentries = new LogentriesLink({ LOGENTRIES_LOGGING: true });
-    assert.equal(logentries.willBeUsed(), true);
+    assert.equal(logentries.isEnabled(), true);
     process.env.LOGENTRIES_LOGGING = false;
-    assert.equal(logentries.willBeUsed(), false);
+    assert.equal(logentries.isEnabled(), false);
     process.env.LOGENTRIES_LOGGING = undefined;
-    assert.equal(logentries.willBeUsed(), true);
+    assert.equal(logentries.isEnabled(), true);
   });
 
   it('should not break down if null is notified', () => {
@@ -106,7 +106,7 @@ describe('Logentries chain link ', () => {
     });
     const spy = sinon.spy(logentries.winston.log);
     logentries.winston.log = spy;
-    const message = format.packMessage();
+    const message = new Message();
     logentries.handle(message);
     assert(spy.called);
   });
@@ -118,7 +118,7 @@ describe('Logentries chain link ', () => {
     });
     const spy = sinon.spy(logentries.winston.log);
     logentries.winston.log = spy;
-    const message = format.packMessage();
+    const message = new Message();
     logentries.handle(message);
     assert(spy.called);
   });
@@ -131,7 +131,7 @@ describe('Logentries chain link ', () => {
     });
     const spy = sinon.spy(logentries.winston.log);
     logentries.winston.log = spy;
-    const message = format.packMessage();
+    const message = new Message();
     logentries.handle(message);
     assert(!spy.called);
   });
@@ -143,7 +143,7 @@ describe('Logentries chain link ', () => {
     });
     const spy = sinon.spy(logentries.winston.log);
     logentries.winston.log = spy;
-    const message = format.packMessage();
+    const message = new Message();
     process.env.MIN_LOG_LEVEL = 'error';
     logentries.handle(message);
     assert(!spy.called);
@@ -156,7 +156,7 @@ describe('Logentries chain link ', () => {
     });
     const spy = sinon.spy(logentries.winston.log);
     logentries.winston.log = spy;
-    const message = format.packMessage('warn');
+    const message = new Message('warn');
     process.env.MIN_LOG_LEVEL = 'error';
     process.env.MIN_LOG_LEVEL_LOGENTRIES = 'warn';
     logentries.handle(message);
@@ -170,7 +170,7 @@ describe('Logentries chain link ', () => {
     });
     const spy = sinon.spy(logentries.winston.log);
     logentries.winston.log = spy;
-    const message = format.packMessage('error');
+    const message = new Message('error');
     process.env.MIN_LOG_LEVEL = 'error';
     logentries.handle(message);
     assert(spy.called);
@@ -183,7 +183,7 @@ describe('Logentries chain link ', () => {
     });
     const spy = sinon.spy(logentries.winston.log);
     logentries.winston.log = spy;
-    const message = format.packMessage('error');
+    const message = new Message('error');
     process.env.MIN_LOG_LEVEL = 'warn';
     logentries.handle(message);
     assert(spy.called);

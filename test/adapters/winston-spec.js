@@ -2,7 +2,7 @@ const LoggerChain = require('../../src/index');
 const assert = require('assert');
 const sinon = require('sinon');
 
-describe('Bugsnag adapter ', () => {
+describe('Winston adapter ', () => {
   before(() => {
     this.consoleInfo = console.info;
   });

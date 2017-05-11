@@ -2,7 +2,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const ConsoleLink = require('../../src/chainLinks/console-link');
 const ChainLink = require('../../src/chainLinks/chain-link');
-const format = require('../../src/utils/message-formatter');
+const Message = require('../../src/modules/message');
 
 describe('Console chain link ', () => {
   before(() => {
@@ -36,7 +36,7 @@ describe('Console chain link ', () => {
     assert(typeof consoleChain, 'object');
     assert(consoleChain instanceof ChainLink);
     assert(typeof consoleChain.isReady, 'function');
-    assert(typeof consoleChain.willBeUsed, 'function');
+    assert(typeof consoleChain.isEnabled, 'function');
     assert(typeof consoleChain.handle, 'function');
   });
 
@@ -49,29 +49,29 @@ describe('Console chain link ', () => {
 
   it('should indicate if it is switched on/off [settings]', () => {
     let consoleChain = new ConsoleLink({ CONSOLE_LOGGING: true });
-    assert.equal(consoleChain.willBeUsed(), true);
+    assert.equal(consoleChain.isEnabled(), true);
     consoleChain = new ConsoleLink({ CONSOLE_LOGGING: false });
-    assert.equal(consoleChain.willBeUsed(), false);
+    assert.equal(consoleChain.isEnabled(), false);
     consoleChain = new ConsoleLink();
-    assert.equal(consoleChain.willBeUsed(), false);
+    assert.equal(consoleChain.isEnabled(), false);
   });
 
   it('should indicate if it is switched on/off [envs]', () => {
     const consoleChain = new ConsoleLink();
-    assert.equal(consoleChain.willBeUsed(), false);
+    assert.equal(consoleChain.isEnabled(), false);
     process.env.CONSOLE_LOGGING = true;
-    assert.equal(consoleChain.willBeUsed(), true);
+    assert.equal(consoleChain.isEnabled(), true);
     process.env.CONSOLE_LOGGING = false;
-    assert.equal(consoleChain.willBeUsed(), false);
+    assert.equal(consoleChain.isEnabled(), false);
   });
 
   it('should indicate if it is switched on/off [envs should have more privilege]', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: true });
-    assert.equal(consoleChain.willBeUsed(), true);
+    assert.equal(consoleChain.isEnabled(), true);
     process.env.CONSOLE_LOGGING = false;
-    assert.equal(consoleChain.willBeUsed(), false);
+    assert.equal(consoleChain.isEnabled(), false);
     process.env.CONSOLE_LOGGING = undefined;
-    assert.equal(consoleChain.willBeUsed(), true);
+    assert.equal(consoleChain.isEnabled(), true);
   });
 
   it('should not break down if null is logged', () => {
@@ -83,7 +83,7 @@ describe('Console chain link ', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: 'true' });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage();
+    const message = new Message();
     consoleChain.handle(message);
     assert(spy.called);
   });
@@ -92,7 +92,7 @@ describe('Console chain link ', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: 'false' });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage();
+    const message = new Message();
     consoleChain.handle(message);
     assert(spy.called);
   });
@@ -104,7 +104,7 @@ describe('Console chain link ', () => {
     });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage();
+    const message = new Message();
     consoleChain.handle(message);
     assert(!spy.called);
   });
@@ -113,7 +113,7 @@ describe('Console chain link ', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: 'true' });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage();
+    const message = new Message();
     process.env.MIN_LOG_LEVEL = 'error';
     consoleChain.handle(message);
     assert(!spy.called);
@@ -123,7 +123,7 @@ describe('Console chain link ', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: 'true' });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage('warn');
+    const message = new Message('warn');
     process.env.MIN_LOG_LEVEL = 'error';
     process.env.MIN_LOG_LEVEL_CONSOLE = 'warn';
     consoleChain.handle(message);
@@ -134,7 +134,7 @@ describe('Console chain link ', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: 'true' });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage('error');
+    const message = new Message('error');
     process.env.MIN_LOG_LEVEL = 'error';
     consoleChain.handle(message);
     assert(spy.called);
@@ -144,7 +144,7 @@ describe('Console chain link ', () => {
     const consoleChain = new ConsoleLink({ CONSOLE_LOGGING: 'true' });
     const spy = sinon.spy(consoleChain.winston.log);
     consoleChain.winston.log = spy;
-    const message = format.packMessage('error');
+    const message = new Message('error');
     process.env.MIN_LOG_LEVEL = 'warn';
     consoleChain.handle(message);
     assert(spy.called);

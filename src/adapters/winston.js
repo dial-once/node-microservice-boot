@@ -55,10 +55,10 @@ class Winston {
   /**
     @function profile
     Fire a winston's implementation of a profiling function
-    @param message - a unique profiling label
+    @param message {string} - a unique profiling label
   **/
   profile(message) {
-    const winston = this.loggerChain.consoleChain.winston;
+    const winston = this.loggerChain.consoleChainLink.winston;
     winston.profile(message);
   }
 }

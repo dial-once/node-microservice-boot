@@ -1,5 +1,5 @@
 require('./env');
-const { packMessage } = require('./utils/message-formatter');
+const Message = require('./modules/message');
 const BugsnagChainLink = require('./chainLinks/bugsnag-link');
 const ConsoleChainLink = require('./chainLinks/console-link');
 const LogentriesChainLink = require('./chainLinks/logentries-link');
@@ -63,16 +63,16 @@ class LoggerChain {
   **/
   constructor(settings) {
     this.settings = settings;
-    this.bugsnagChain = new BugsnagChainLink(settings, null);
-    this.logentriesChain = new LogentriesChainLink(settings, this.bugsnagChain);
-    this.consoleChain = new ConsoleChainLink(settings, this.logentriesChain);
-    this.chainStart = this.consoleChain;
-    this.chainEnd = this.bugsnagChain;
+    this.bugsnagChainLink = new BugsnagChainLink(settings, null);
+    this.logentriesChainLink = new LogentriesChainLink(settings, this.bugsnagChainLink);
+    this.consoleChainLink = new ConsoleChainLink(settings, this.logentriesChainLink);
+    this.chainStart = this.consoleChainLink;
+    this.chainEnd = this.bugsnagChainLink;
     this.ChainLink = ChainLink;
   }
 
   log(logLevel, message, ...args) {
-    this.chainStart.handle(packMessage(logLevel, message, ...args));
+    this.chainStart.handle(new Message(logLevel, message, ...args));
   }
 }
 

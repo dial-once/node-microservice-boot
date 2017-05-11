@@ -79,21 +79,21 @@ class ChainLink {
     @throws Error if not implemented
   **/
   isReady() {
-    throw new Error('Not implemented exception');
+    throw new Error('Not implemented');
   }
 
   /**
-    @function isReady
+    @function isEnabled
     Check if a chain link will be used
     @return {boolean}
     @throws Error if not implemented
   **/
-  willBeUsed() {
-    throw new Error('Not implemented exception');
+  isEnabled() {
+    throw new Error('Not implemented');
   }
 
   /**
-    @function isReady
+    @function handle
     Process the provided message object
     @param message {Object} - a message package object
     @throws Error if not implemented
@@ -103,7 +103,7 @@ class ChainLink {
     This function HAS to check message level priority and skip if lower than MIN_LOG_LEVEL
   **/
   handle() {
-    throw new Error('Not implemented exception');
+    throw new Error('Not implemented');
   }
 }
 
