@@ -1,8 +1,22 @@
 const DEFAULT_INSTANCE_ID = 1;
 
-if (process.env.NODE_ENV === 'production') {
-  process.env.CONSOLE_LOGGING = 'false';
+if (process.env.NODE_ENV !== 'production') {
+  process.env.CONSOLE_LOGGING = 'true';
 }
+
+process.env.BUGSNAG_LOGGING = 'true';
+process.env.LOGENTRIES_LOGGING = 'true';
+process.env.MIN_LOG_LEVEL = 'warn';
+process.env.DEFAULT_LOG_LEVEL = 'info';
+
+process.env.MIN_LOG_LEVEL_CONSOLE = 'info';
+process.env.MIN_LOG_LEVEL_LOGENTRIES = 'error';
+process.env.BUGSNAG_RELEASE_STAGES = 'production,staging';
+
+process.env.LOG_TIMESTAMP = 'true';
+process.env.LOG_ENVIRONMENT = 'true';
+process.env.LOG_LEVEL = 'true';
+process.env.LOG_REQID = 'true';
 
 if (!process.env.HOSTNAME) {
   process.env.HOSTNAME = process.env.USER;

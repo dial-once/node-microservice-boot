@@ -48,15 +48,15 @@ describe('env checks', () => {
 
     require(modulePath);
 
-    assert.equal(process.env.CONSOLE_LOGGING, 'false');
+    assert.equal(process.env.CONSOLE_LOGGING, '');
   });
 
-  it('should not set CONSOLE_LOGGING to false if NODE_ENV is not production', () => {
+  it('should not set CONSOLE_LOGGING to true if NODE_ENV is not production', () => {
     process.env.NODE_ENV = 'test';
     process.env.CONSOLE_LOGGING = '';
 
     require(modulePath);
 
-    assert.equal(process.env.CONSOLE_LOGGING, '');
+    assert.equal(process.env.CONSOLE_LOGGING, 'true');
   });
 });

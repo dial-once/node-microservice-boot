@@ -21,6 +21,7 @@
   "homepage": "https://github.com/dial-once/node-microservice-boot#readme",
   "dependencies": {
     "bugsnag": "^1.7.0",
+    "deep-freeze": "0.0.1",
     "le_node": "^1.3.2",
     "winston": "^2.2.0"
   },
