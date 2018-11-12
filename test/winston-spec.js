@@ -9,7 +9,7 @@ describe('winston transports', () => {
   let sandbox;
 
   beforeEach(() => {
-    this.sinon = sandbox = sinon.sandbox.create();
+    this.sinon = sandbox = sinon.sandbox.create(); // eslint-disable-line no-multi-assign
     process.env.CONSOLE_LOGGING = '';
     delete require.cache[require.resolve(modulePath)];
     delete require.cache[require.resolve('winston')];
@@ -49,7 +49,7 @@ describe('winston transports', () => {
     const notifier = require('../src/bugsnag')();
 
     const logger = require(modulePath)(notifier, '00000000-0000-0000-0000-000000000000', false);
-    console.log(require(modulePath)(notifier, '00000000-0000-0000-0000-000000000000', false));
+    console.log(require(modulePath)(notifier, '00000000-0000-0000-0000-000000000000', false)); // eslint-disable-line no-console
 
     const mock = this.sinon.mock(notifier);
     mock.expects('notify').twice().withExactArgs('should notify');
